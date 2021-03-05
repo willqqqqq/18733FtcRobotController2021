@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -39,11 +38,11 @@ public class willAuto3 extends LinearOpMode
     private ElapsedTime runtime = new ElapsedTime();
 
     static final double COUNTS_PER_MOTOR_REV = 537.6;
-    static final double DRIVE_GEAR_REDUCTION = 0;     // < 1.0 if geared up
+    static final double DRIVE_GEAR_REDUCTION = 1;     // < 1.0 if geared up
     static final double WHEEL_DIAMETER_INCHES = 2.95276;
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
 
-    static final double SPOOL_DIAMETER_INCHES = 2.95276;
+    static final double SPOOL_DIAMETER_INCHES = 1.825;
     static final double COUNTS_PER_INCH_SPOOL = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (SPOOL_DIAMETER_INCHES * 3.1415);
 
     SkystoneDeterminationPipeline pipeline;
@@ -67,6 +66,7 @@ public class willAuto3 extends LinearOpMode
         wobbleGrab = hardwareMap.servo.get("wobbleGrab");
         ringShoot = hardwareMap.servo.get("ringShoot");
         ringPivot = hardwareMap.servo.get("ringPivot");
+        ringGrab = hardwareMap.servo.get("ringGrab");
 
         telemetry.addData("Status", "Resetting Encoders");
         telemetry.update();
@@ -83,10 +83,6 @@ public class willAuto3 extends LinearOpMode
         backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-
-
-
-        // Send telemetry message to indicate successful Encoder reset
         telemetry.addData("Path0", "Starting at %7d :%7d",
                 frontLeft.getCurrentPosition(),
                 frontRight.getCurrentPosition(),
@@ -98,12 +94,6 @@ public class willAuto3 extends LinearOpMode
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         pipeline = new SkystoneDeterminationPipeline();
         webcam.setPipeline(pipeline);
-
-
-
-        // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
-        // out when the RC activity is in portrait. We do our actual image processing assuming
-        // landscape orientation, though.
 
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
@@ -117,8 +107,8 @@ public class willAuto3 extends LinearOpMode
         wobbleLift.setPosition(.5);
         wobbleGrab.setPosition(.5);
         ringShoot.setPosition(.5);
-        //ringPivot.setPosition(1);
-        //ringGrab.setPosition(.5);
+        ringPivot.setPosition(0);
+        ringGrab.setPosition(1);
 
 
         waitForStart();
@@ -339,10 +329,8 @@ public class willAuto3 extends LinearOpMode
         int backLeftTarget;
         int backRightTarget;
 
-        // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
-            // Determine new target position, and pass to motor controller
             frontLeftTarget = frontLeft.getCurrentPosition() + (int) (distanceInches * COUNTS_PER_INCH);
             frontRightTarget = frontRight.getCurrentPosition() + (int) (distanceInches * COUNTS_PER_INCH);
             backLeftTarget = backLeft.getCurrentPosition() + (int) (distanceInches * COUNTS_PER_INCH);
@@ -353,30 +341,21 @@ public class willAuto3 extends LinearOpMode
             backLeft.setTargetPosition(backLeftTarget);
             backRight.setTargetPosition(backRightTarget);
 
-            // Turn On RUN_TO_POSITION
             frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            // reset the timeout time and start motion.
             runtime.reset();
             frontLeft.setPower(Math.abs(speed));
             frontRight.setPower(Math.abs(speed));
             backLeft.setPower(Math.abs(speed));
             backRight.setPower(Math.abs(speed));
 
-            // keep looping while we are still active, and there is time left, and both motors are running.
-            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target position, the motion will stop.  This is "safer" in the event that the robot will
-            // always end the motion as soon as possible.
-            // However, if you require that BOTH motors have finished their moves before the robot continues
-            // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
                     (runtime.seconds() < timeoutS) &&
                     (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy())) {
 
-                // Display it for the driver.
                 telemetry.addData("Path1", "Running to %7d :%7d", frontLeftTarget, frontRightTarget, backLeftTarget, backRightTarget);
                 telemetry.addData("Path2", "Running at %7d :%7d",
                         frontLeft.getCurrentPosition(),
@@ -406,44 +385,33 @@ public class willAuto3 extends LinearOpMode
         int backLeftTarget;
         int backRightTarget;
 
-        // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
-            // Determine new target position, and pass to motor controller
             frontLeftTarget = frontLeft.getCurrentPosition() - (int) (distanceInches * COUNTS_PER_INCH);
             frontRightTarget = frontRight.getCurrentPosition() - (int) (distanceInches * COUNTS_PER_INCH);
             backLeftTarget = backLeft.getCurrentPosition() - (int) (distanceInches * COUNTS_PER_INCH);
             backRightTarget = backRight.getCurrentPosition() - (int) (distanceInches * COUNTS_PER_INCH);
 
-            frontLeft.setTargetPosition(frontLeftTarget); //Reverse this????
-            frontRight.setTargetPosition(frontRightTarget); //Reverse this????
-            backLeft.setTargetPosition(backLeftTarget); //Reverse this????
-            backRight.setTargetPosition(backRightTarget); //Reverse this????
+            frontLeft.setTargetPosition(frontLeftTarget);
+            frontRight.setTargetPosition(frontRightTarget);
+            backLeft.setTargetPosition(backLeftTarget);
+            backRight.setTargetPosition(backRightTarget);
 
-            // Turn On RUN_TO_POSITION
             frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            // reset the timeout time and start motion.
             runtime.reset();
             frontLeft.setPower(Math.abs(speed));
             frontRight.setPower(Math.abs(speed));
             backLeft.setPower(Math.abs(speed));
             backRight.setPower(Math.abs(speed));
 
-            // keep looping while we are still active, and there is time left, and both motors are running.
-            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target position, the motion will stop.  This is "safer" in the event that the robot will
-            // always end the motion as soon as possible.
-            // However, if you require that BOTH motors have finished their moves before the robot continues
-            // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
                     (runtime.seconds() < timeoutS) &&
                     (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy())) {
 
-                // Display it for the driver.
                 telemetry.addData("Path1", "Running to %7d :%7d", frontLeftTarget, frontRightTarget, backLeftTarget, backRightTarget);
                 telemetry.addData("Path2", "Running at %7d :%7d",
                         frontLeft.getCurrentPosition(),
@@ -473,10 +441,8 @@ public class willAuto3 extends LinearOpMode
         int backLeftTarget;
         int backRightTarget;
 
-        // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
-            // Determine new target position, and pass to motor controller
             frontLeftTarget = frontLeft.getCurrentPosition() - (int) (distanceInches * COUNTS_PER_INCH);
             frontRightTarget = frontRight.getCurrentPosition() + (int) (distanceInches * COUNTS_PER_INCH);
             backLeftTarget = backLeft.getCurrentPosition() + (int) (distanceInches * COUNTS_PER_INCH);
@@ -487,25 +453,17 @@ public class willAuto3 extends LinearOpMode
             backLeft.setTargetPosition(backLeftTarget);
             backRight.setTargetPosition(backRightTarget);
 
-            // Turn On RUN_TO_POSITION
             frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            // reset the timeout time and start motion.
             runtime.reset();
             frontLeft.setPower(Math.abs(speed));
             frontRight.setPower(Math.abs(speed));
             backLeft.setPower(Math.abs(speed));
             backRight.setPower(Math.abs(speed));
 
-            // keep looping while we are still active, and there is time left, and both motors are running.
-            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target position, the motion will stop.  This is "safer" in the event that the robot will
-            // always end the motion as soon as possible.
-            // However, if you require that BOTH motors have finished their moves before the robot continues
-            // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
                     (runtime.seconds() < timeoutS) &&
                     (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy())) {
@@ -540,10 +498,8 @@ public class willAuto3 extends LinearOpMode
         int backLeftTarget;
         int backRightTarget;
 
-        // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
-            // Determine new target position, and pass to motor controller
             frontLeftTarget = frontLeft.getCurrentPosition() + (int) (distanceInches * COUNTS_PER_INCH);
             frontRightTarget = frontRight.getCurrentPosition() - (int) ((distanceInches) * COUNTS_PER_INCH);
             backLeftTarget = backLeft.getCurrentPosition() - (int) ((distanceInches) * COUNTS_PER_INCH);
@@ -554,30 +510,21 @@ public class willAuto3 extends LinearOpMode
             backLeft.setTargetPosition(backLeftTarget);
             backRight.setTargetPosition(backRightTarget);
 
-            // Turn On RUN_TO_POSITION
             frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            // reset the timeout time and start motion.
             runtime.reset();
             frontLeft.setPower(Math.abs(speed));
             frontRight.setPower(Math.abs(speed));
             backLeft.setPower(Math.abs(speed));
             backRight.setPower(Math.abs(speed));
 
-            // keep looping while we are still active, and there is time left, and both motors are running.
-            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target position, the motion will stop.  This is "safer" in the event that the robot will
-            // always end the motion as soon as possible.
-            // However, if you require that BOTH motors have finished their moves before the robot continues
-            // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
                     (runtime.seconds() < timeoutS) &&
                     (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy())) {
 
-                // Display it for the driver.
                 telemetry.addData("Path1", "Running to %7d :%7d", frontLeftTarget, frontRightTarget, backLeftTarget, backRightTarget);
                 telemetry.addData("Path2", "Running at %7d :%7d",
                         frontLeft.getCurrentPosition(),
@@ -599,16 +546,17 @@ public class willAuto3 extends LinearOpMode
         }
 
     }
-    public void loadRing(double timeoutS) {
+    public void loadRing() {
         int slideTarget;
 
         if (opModeIsActive()) {
 
+            ringPivot.setPosition(0);
+            ringGrab.setPosition(0.5);
 
-            ringGrab.setPosition(1);
+            sleep(1000);
 
-
-            slideTarget = slide.getCurrentPosition() + (int) ((2) * COUNTS_PER_INCH_SPOOL);
+            slideTarget = slide.getCurrentPosition() + (int) ((3) * COUNTS_PER_INCH_SPOOL);
 
             slide.setTargetPosition(slideTarget);
 
@@ -617,27 +565,19 @@ public class willAuto3 extends LinearOpMode
             runtime.reset();
             slide.setPower(Math.abs(.4));
 
-            while (opModeIsActive() &&
-                    (runtime.seconds() < timeoutS) &&
-                    (slide.isBusy())) {
+            sleep(1000);
 
-                // Display it for the driver.
-                telemetry.addData("Path1", "Running to %7d :%7d", slideTarget);
-                telemetry.addData("Path2", "Running at %7d :%7d",
-                        slide.getCurrentPosition(),
-                        telemetry.update());
-            }
-            slide.setPower(0);
+            ringPivot.setPosition(1);
 
-            sleep(500);
+            sleep(1000);
 
-            ringGrab.setPosition(0);
+            ringPivot.setPosition(0);
 
-            sleep(500);
+            sleep(1000);
 
             slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            slideTarget = slide.getCurrentPosition() + (int) ((-2) * COUNTS_PER_INCH_SPOOL);
+            slideTarget = slide.getCurrentPosition() + (int) ((-3) * COUNTS_PER_INCH_SPOOL);
 
             slide.setTargetPosition(slideTarget);
 
@@ -646,19 +586,12 @@ public class willAuto3 extends LinearOpMode
             runtime.reset();
             slide.setPower(Math.abs(.4));
 
-            while (opModeIsActive() &&
-                    (runtime.seconds() < timeoutS) &&
-                    (slide.isBusy())) {
+            sleep(500);
 
-                telemetry.addData("Path1", "Running to %7d :%7d", slideTarget);
-                telemetry.addData("Path2", "Running at %7d :%7d",
-                        slide.getCurrentPosition(),
-                        telemetry.update());
-            }
+            ringGrab.setPosition(1);
 
         }
     }
-
     public void wobbleUp()
     {
         wobbleLift.setPosition(.5);
