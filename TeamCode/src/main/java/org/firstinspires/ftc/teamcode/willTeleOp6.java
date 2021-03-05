@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.BasicOpMode_Linear
 
 @TeleOp (name = "willTeleOp6", group = "1")
 public class willTeleOp6 extends BasicOpMode_Linear
-//Created by Will Underhill
+//Created by Will Underhill and jackie winglke
 {
     private DcMotor frontLeft;
     private DcMotor frontRight;
@@ -91,10 +91,10 @@ public class willTeleOp6 extends BasicOpMode_Linear
             final double v3 = r * Math.sin(robotAngle) + rightX;
             final double v4 = r * Math.cos(robotAngle) - rightX;
 
-            frontLeft.setPower(v1/drivePower);
-            frontRight.setPower(v2/drivePower);
-            backLeft.setPower(v3/drivePower);
-            backRight.setPower(v4/drivePower);
+            frontLeft.setPower(v1*drivePower);
+            frontRight.setPower(v2*drivePower);
+            backLeft.setPower(v3*drivePower);
+            backRight.setPower(v4*drivePower);
 
             if (gamepad1.cross && !crossToggle1){
                 crossToggle1 = true;
@@ -157,6 +157,25 @@ public class willTeleOp6 extends BasicOpMode_Linear
             ////////////////////////////////////////
             ////////////////////////////////////////
 
+            if(gamepad2.right_trigger > 0.2){
+                ringShoot.setPosition(1);
+                sleep(500);
+                ringShoot.setPosition(0.5);
+            }
+
+            ////////////////////////////////////////
+            ////////////////////////////////////////
+
+            if(gamepad2.dpad_up){
+                wobbleLift.setPosition(1);
+            }
+
+            if(gamepad2.dpad_down){
+                wobbleLift.setPosition(0.25);
+            }
+
+            ////////////////////////////////////////
+            ////////////////////////////////////////
 
             idle();
         }
