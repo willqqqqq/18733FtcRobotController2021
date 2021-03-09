@@ -20,8 +20,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @Autonomous(name="willAuto3", group="1")
-public class willAuto3 extends LinearOpMode
-{
+public class willAuto3 extends LinearOpMode {
     private DcMotor frontLeft;
     private DcMotor frontRight;
     private DcMotor backLeft;
@@ -49,8 +48,7 @@ public class willAuto3 extends LinearOpMode
     static double ringCount = 0;
 
     @Override
-    public void runOpMode()
-    {
+    public void runOpMode() {
         frontLeft = hardwareMap.dcMotor.get("frontLeft");
         frontRight = hardwareMap.dcMotor.get("frontRight");
         backLeft = hardwareMap.dcMotor.get("backLeft");
@@ -95,46 +93,45 @@ public class willAuto3 extends LinearOpMode
         pipeline = new SkystoneDeterminationPipeline();
         webcam.setPipeline(pipeline);
 
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
-            public void onOpened()
-            {
-                webcam.startStreaming(320,240, OpenCvCameraRotation.SIDEWAYS_LEFT);
+            public void onOpened() {
+                webcam.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_LEFT);
             }
         });
 
         wobbleLift.setPosition(.5);
         wobbleGrab.setPosition(.5);
         ringShoot.setPosition(.5);
-        ringPivot.setPosition(0);
-        ringGrab.setPosition(1);
+        //ringPivot.setPosition(0);
+        //ringGrab.setPosition(1);
 
 
         waitForStart();
 
 
-        if (ringCount == 4){
+        if (ringCount == 4) {
             //
-
-            //
-            stop();
-        }
-        if (ringCount == 1){
-            //
-
+            driveForward(1, 24, 30);
+            strafeLeft(1, 12, 30);
+            driveForward(1, 85, 30);
+            strafeRight(1, 24, 30);
+            turnLeft(1, 10, 30);
             //
             stop();
         }
-        if (ringCount == 0){
+        if (ringCount == 1) {
             //
-
+            //
+            stop();
+        }
+        if (ringCount == 0) {
+            //
             //
             stop();
         }
 
-        while (opModeIsActive())
-        {
+        while (opModeIsActive()) {
             telemetry.addData("Analysis", pipeline.getAnalysis());
             telemetry.addData("Position", pipeline.position);
             telemetry.update();
@@ -144,13 +141,14 @@ public class willAuto3 extends LinearOpMode
         }
     }
 
-    public static class SkystoneDeterminationPipeline extends OpenCvPipeline
-    {
+    private void encoderDrive(int i, int i1, int i2, int i3, int i4) {
+    }
+
+    public static class SkystoneDeterminationPipeline extends OpenCvPipeline {
         /*
          * An enum to define the skystone position
          */
-        public enum RingPosition
-        {
+        public enum RingPosition {
             FOUR,
             ONE,
             NONE
@@ -165,7 +163,7 @@ public class willAuto3 extends LinearOpMode
         /*
          * The core values which define the location and size of the sample regions
          */
-        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(181,98);
+        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(181, 225);
 
         static final int REGION_WIDTH = 35;
         static final int REGION_HEIGHT = 25;
@@ -195,23 +193,20 @@ public class willAuto3 extends LinearOpMode
          * This function takes the RGB frame, converts to YCrCb,
          * and extracts the Cb channel to the 'Cb' variable
          */
-        void inputToCb(Mat input)
-        {
+        void inputToCb(Mat input) {
             Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
             Core.extractChannel(YCrCb, Cb, 1);
         }
 
         @Override
-        public void init(Mat firstFrame)
-        {
+        public void init(Mat firstFrame) {
             inputToCb(firstFrame);
 
             region1_Cb = Cb.submat(new Rect(region1_pointA, region1_pointB));
         }
 
         @Override
-        public Mat processFrame(Mat input)
-        {
+        public Mat processFrame(Mat input) {
             inputToCb(input);
 
             avg1 = (int) Core.mean(region1_Cb).val[0];
@@ -224,13 +219,13 @@ public class willAuto3 extends LinearOpMode
                     2); // Thickness of the rectangle lines
 
             position = RingPosition.FOUR; // Record our analysis
-            if(avg1 > FOUR_RING_THRESHOLD){
+            if (avg1 > FOUR_RING_THRESHOLD) {
                 position = RingPosition.FOUR;
                 ringCount = 4.0;
-            }else if (avg1 > ONE_RING_THRESHOLD){
+            } else if (avg1 > ONE_RING_THRESHOLD) {
                 position = RingPosition.ONE;
                 ringCount = 1.0;
-            }else{
+            } else {
                 position = RingPosition.NONE;
                 ringCount = 0;
             }
@@ -245,11 +240,9 @@ public class willAuto3 extends LinearOpMode
             return input;
         }
 
-        public int getAnalysis()
-        {
+        public int getAnalysis() {
             return avg1;
         }
-
 
 
     }
@@ -321,6 +314,7 @@ public class willAuto3 extends LinearOpMode
         }
 
     }
+
     public void driveForward(double speed,
                              double distanceInches,
                              double timeoutS) {
@@ -377,6 +371,7 @@ public class willAuto3 extends LinearOpMode
         }
 
     }
+
     public void driveBackward(double speed,
                               double distanceInches,
                               double timeoutS) {
@@ -433,6 +428,7 @@ public class willAuto3 extends LinearOpMode
         }
 
     }
+
     public void strafeLeft(double speed,
                            double distanceInches,
                            double timeoutS) {
@@ -490,6 +486,7 @@ public class willAuto3 extends LinearOpMode
         }
 
     }
+
     public void strafeRight(double speed,
                             double distanceInches,
                             double timeoutS) {
@@ -546,6 +543,121 @@ public class willAuto3 extends LinearOpMode
         }
 
     }
+
+    public void turnLeft(double speed,
+                         double distanceInches,
+                         double timeoutS) {
+        int frontLeftTarget;
+        int frontRightTarget;
+        int backLeftTarget;
+        int backRightTarget;
+
+        if (opModeIsActive()) {
+
+            frontLeftTarget = frontLeft.getCurrentPosition() + (int) (distanceInches * COUNTS_PER_INCH);
+            frontRightTarget = frontRight.getCurrentPosition() - (int) (distanceInches * COUNTS_PER_INCH);
+            backLeftTarget = backLeft.getCurrentPosition() + (int) (distanceInches * COUNTS_PER_INCH);
+            backRightTarget = backRight.getCurrentPosition() - (int) (distanceInches * COUNTS_PER_INCH);
+
+            frontLeft.setTargetPosition(frontLeftTarget);
+            frontRight.setTargetPosition(frontRightTarget);
+            backLeft.setTargetPosition(backLeftTarget);
+            backRight.setTargetPosition(backRightTarget);
+
+            frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            runtime.reset();
+            frontLeft.setPower(Math.abs(speed));
+            frontRight.setPower(Math.abs(speed));
+            backLeft.setPower(Math.abs(speed));
+            backRight.setPower(Math.abs(speed));
+
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutS) &&
+                    (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy())) {
+
+                telemetry.addData("Path1", "Running to %7d :%7d", frontLeftTarget, frontRightTarget, backLeftTarget, backRightTarget);
+                telemetry.addData("Path2", "Running at %7d :%7d",
+                        frontLeft.getCurrentPosition(),
+                        frontRight.getCurrentPosition(),
+                        backLeft.getCurrentPosition(),
+                        backRight.getCurrentPosition());
+                telemetry.update();
+            }
+            frontLeft.setPower(0);
+            frontRight.setPower(0);
+            backLeft.setPower(0);
+            backRight.setPower(0);
+
+            frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+
+    }
+
+
+        public void turnRight(double speed,
+        double distanceInches,
+        double timeoutS) {
+            int frontLeftTarget;
+            int frontRightTarget;
+            int backLeftTarget;
+            int backRightTarget;
+
+            if (opModeIsActive()) {
+
+                frontLeftTarget = frontLeft.getCurrentPosition() - (int) (distanceInches * COUNTS_PER_INCH);
+                frontRightTarget = frontRight.getCurrentPosition() + (int) (distanceInches * COUNTS_PER_INCH);
+                backLeftTarget = backLeft.getCurrentPosition() + (int) (distanceInches * COUNTS_PER_INCH);
+                backRightTarget = backRight.getCurrentPosition() - (int) (distanceInches * COUNTS_PER_INCH);
+
+                frontLeft.setTargetPosition(frontLeftTarget);
+                frontRight.setTargetPosition(frontRightTarget);
+                backLeft.setTargetPosition(backLeftTarget);
+                backRight.setTargetPosition(backRightTarget);
+
+                frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                runtime.reset();
+                frontLeft.setPower(Math.abs(speed));
+                frontRight.setPower(Math.abs(speed));
+                backLeft.setPower(Math.abs(speed));
+                backRight.setPower(Math.abs(speed));
+
+                while (opModeIsActive() &&
+                        (runtime.seconds() < timeoutS) &&
+                        (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy())) {
+
+                    telemetry.addData("Path1", "Running to %7d :%7d", frontLeftTarget, frontRightTarget, backLeftTarget, backRightTarget);
+                    telemetry.addData("Path2", "Running at %7d :%7d",
+                            frontLeft.getCurrentPosition(),
+                            frontRight.getCurrentPosition(),
+                            backLeft.getCurrentPosition(),
+                            backRight.getCurrentPosition());
+                    telemetry.update();
+                }
+                frontLeft.setPower(0);
+                frontRight.setPower(0);
+                backLeft.setPower(0);
+                backRight.setPower(0);
+
+                frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            }
+
+
+        }
     public void loadRing() {
         int slideTarget;
 
