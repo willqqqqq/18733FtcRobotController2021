@@ -122,7 +122,10 @@ public class willAuto3 extends LinearOpMode {
         }
         if (ringCount == 1) {
             //
-                angleDrive(.5,45,.2,10,30);
+                angleDrive(1,45,0,10,30);
+                angleDrive(1,225,0,10,30);
+                angleDrive(.5,45,.3,10,30);
+                angleDrive(.5,225,-.3,10,30);
             //
             stop();
         }
