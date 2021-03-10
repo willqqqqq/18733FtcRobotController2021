@@ -122,6 +122,7 @@ public class willAuto3 extends LinearOpMode {
         }
         if (ringCount == 1) {
             //
+                angleDrive(.5,45,.2,10,30);
             //
             stop();
         }
@@ -664,11 +665,11 @@ public class willAuto3 extends LinearOpMode {
         if (opModeIsActive()) {
 
             ringPivot.setPosition(0);
-            ringGrab.setPosition(0.5);
+            ringGrab.setPosition(0.3);
 
             sleep(1000);
 
-            slideTarget = slide.getCurrentPosition() + (int) ((3) * COUNTS_PER_INCH_SPOOL);
+            slideTarget = slide.getCurrentPosition() + (int) ((2.9) * COUNTS_PER_INCH_SPOOL);
 
             slide.setTargetPosition(slideTarget);
 
@@ -683,13 +684,19 @@ public class willAuto3 extends LinearOpMode {
 
             sleep(1000);
 
+            ringGrab.setPosition(.5);
+            sleep(1000);
+
+            ringGrab.setPosition(.3);
+            sleep(1000);
+
             ringPivot.setPosition(0);
 
             sleep(1000);
 
             slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            slideTarget = slide.getCurrentPosition() + (int) ((-3) * COUNTS_PER_INCH_SPOOL);
+            slideTarget = slide.getCurrentPosition() + (int) ((-2.9) * COUNTS_PER_INCH_SPOOL);
 
             slide.setTargetPosition(slideTarget);
 
@@ -700,10 +707,85 @@ public class willAuto3 extends LinearOpMode {
 
             sleep(500);
 
-            ringGrab.setPosition(1);
+            ringGrab.setPosition(.6);
 
         }
     }
+
+    public void angleDrive(double speed,
+                             double robotAngle,
+                             double rightX,
+                             double distanceInches,
+                             double timeoutS){
+
+        /* double r = Math.hypot(gamepad1.left_stick_x, gamepad1.left_stick_y);
+        double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
+        double rightX = -gamepad1.right_stick_x; */
+
+        final double fl = speed * Math.cos(robotAngle) + rightX; //r repalced with speed
+        final double fr = speed * Math.sin(robotAngle) - rightX; // I think r was the radius and it also was the "speed" of the motors?
+        final double bl = speed * Math.sin(robotAngle) + rightX;
+        final double br = speed * Math.cos(robotAngle) - rightX;
+
+       /* frontLeft.setPower(fl*speed);
+        frontRight.setPower(fr*speed);
+        backLeft.setPower(bl*speed);
+        backRight.setPower(br*speed); */
+
+        int frontLeftTarget;
+        int frontRightTarget;
+        int backLeftTarget;
+        int backRightTarget;
+
+        if (opModeIsActive()) {
+
+            frontLeftTarget = frontLeft.getCurrentPosition() + (int) ((distanceInches * fl) * COUNTS_PER_INCH);
+            frontRightTarget = frontRight.getCurrentPosition() + (int) ((distanceInches * fr) * COUNTS_PER_INCH);
+            backLeftTarget = backLeft.getCurrentPosition() + (int) ((distanceInches * bl) * COUNTS_PER_INCH);
+            backRightTarget = backRight.getCurrentPosition() + (int) ((distanceInches * br) * COUNTS_PER_INCH);
+
+            frontLeft.setTargetPosition(frontLeftTarget);
+            frontRight.setTargetPosition(frontRightTarget);
+            backLeft.setTargetPosition(backLeftTarget);
+            backRight.setTargetPosition(backRightTarget);
+
+            frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            runtime.reset();
+            frontLeft.setPower(Math.abs(speed * fl));  // Absolute value may be an issue in the future?
+            frontRight.setPower(Math.abs(speed * fr));
+            backLeft.setPower(Math.abs(speed * bl));
+            backRight.setPower(Math.abs(speed * br));
+
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutS) &&
+                    (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy())) {
+
+                telemetry.addData("Path1", "Running to %7d :%7d", frontLeftTarget, frontRightTarget, backLeftTarget, backRightTarget);
+                telemetry.addData("Path2", "Running at %7d :%7d",
+                        frontLeft.getCurrentPosition(),
+                        frontRight.getCurrentPosition(),
+                        backLeft.getCurrentPosition(),
+                        backRight.getCurrentPosition());
+                telemetry.update();
+            }
+            frontLeft.setPower(0);
+            frontRight.setPower(0);
+            backLeft.setPower(0);
+            backRight.setPower(0);
+
+            frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        }
+
+    }
+
     public void wobbleUp()
     {
         wobbleLift.setPosition(.5);
