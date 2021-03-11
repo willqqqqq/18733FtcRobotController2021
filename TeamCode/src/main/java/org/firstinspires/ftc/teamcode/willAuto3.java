@@ -100,7 +100,7 @@ public class willAuto3 extends LinearOpMode {
             }
         });
 
-        wobbleLift.setPosition(.5);
+        wobbleLift.setPosition(.57);
         wobbleGrab.setPosition(.5);
         ringShoot.setPosition(.5);
         //ringPivot.setPosition(0);
@@ -112,11 +112,31 @@ public class willAuto3 extends LinearOpMode {
 
         if (ringCount == 4) {
             //
-            driveForward(1, 24, 30);
-            strafeLeft(1, 12, 30);
-            driveForward(1, 85, 30);
-            strafeRight(1, 24, 30);
-            turnLeft(1, 10, 30);
+            driveForward(0.5, 24, 30);
+            sleep(500);
+            strafeLeft(0.5, 12, 30);
+            sleep(500);
+            driveForward(0.5, 87, 30);
+            sleep(500);
+            strafeRight(0.5, 24, 30);
+            sleep(500);
+            encoderDrive(.7,-21,21,-21,21,10);
+            sleep(500);
+            wobbleDown();
+            sleep(500);
+            openClaw();
+            sleep(500);
+            wobbleUp();
+            closeClaw();
+            encoderDrive(.7,21,-21,21,-21,10);
+            sleep(500);
+            strafeLeft(0.5,18,30);
+            sleep(500);
+            driveBackward(0.5,50,30);
+            sleep(500);
+            flywheelOn();
+            sleep(1200);
+            fire(3);
             //
             stop();
         }
@@ -127,6 +147,7 @@ public class willAuto3 extends LinearOpMode {
         }
         if (ringCount == 0) {
             //
+            wobbleDown();
             //
             stop();
         }
@@ -704,17 +725,17 @@ public class willAuto3 extends LinearOpMode {
 
         }
     }
-    public void wobbleUp()
-    {
-        wobbleLift.setPosition(.5);
-    }
     public void wobbleDown()
+    {
+        wobbleLift.setPosition(0);
+    }
+    public void wobbleUp()
     {
         wobbleLift.setPosition(1);
     }
     public void wobbleStore()
     {
-        wobbleLift.setPosition(0);
+        wobbleLift.setPosition(1);
     }
     public void openClaw()
     {
@@ -726,7 +747,7 @@ public class willAuto3 extends LinearOpMode {
     }
     public void flywheelOn()
     {
-        flywheel.setPower(.8);
+        flywheel.setPower(.9);
     }
     public void flywheelOff()
     {
@@ -740,7 +761,7 @@ public class willAuto3 extends LinearOpMode {
         while (cyclesCompleted < cycles) {
             cyclesCompleted += 1;
             ringShoot.setPosition(1);
-            sleep(500);
+            sleep(800);
             ringShoot.setPosition(.5);
             sleep(500);
         }
