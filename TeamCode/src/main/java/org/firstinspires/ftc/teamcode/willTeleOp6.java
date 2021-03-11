@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.BasicOpMode_Linear
 
 @TeleOp (name = "willTeleOp6", group = "1")
 public class willTeleOp6 extends BasicOpMode_Linear
-//Created by Will Underhill and jackie winglke
+
 {
     private DcMotor frontLeft;
     private DcMotor frontRight;
@@ -24,6 +24,7 @@ public class willTeleOp6 extends BasicOpMode_Linear
     private Servo ringPivot;
     private Servo ringShoot;
 
+    private ElapsedTime timer = new ElapsedTime();
     private ElapsedTime runtime = new ElapsedTime();
 
     static final double COUNTS_PER_MOTOR_REV = 537.6;
@@ -37,6 +38,7 @@ public class willTeleOp6 extends BasicOpMode_Linear
     @Override
     public void runOpMode()
     {
+
         frontLeft = hardwareMap.dcMotor.get("frontLeft");
         frontRight = hardwareMap.dcMotor.get("frontRight");
         backLeft = hardwareMap.dcMotor.get("backLeft");
@@ -68,6 +70,7 @@ public class willTeleOp6 extends BasicOpMode_Linear
         boolean triangleToggle2 = false;
         boolean crossToggle2 = false;
         boolean squareToggle2 = false;
+        boolean shareToggle2 = false;
 
         double drivePower = 1;
 
@@ -75,7 +78,6 @@ public class willTeleOp6 extends BasicOpMode_Linear
         wobbleGrab.setPosition(.5);
         ringShoot.setPosition(.5);
         ringPivot.setPosition(0);
-        flywheel.setPower(.8);
         sleep(500);
         ringGrab.setPosition(.6);
 
@@ -96,6 +98,7 @@ public class willTeleOp6 extends BasicOpMode_Linear
             backLeft.setPower(v3*drivePower);
             backRight.setPower(v4*drivePower);
 
+
             if (gamepad1.cross && !crossToggle1){
                 crossToggle1 = true;
                 sleep(300);
@@ -105,18 +108,18 @@ public class willTeleOp6 extends BasicOpMode_Linear
                 sleep(300);
             }
             if(crossToggle1){
-                drivePower = 1;
-            }
-            else if(!crossToggle1){
                 drivePower = .5;
             }
-
-            ////////////////////////////////////////
-            ////////////////////////////////////////
-
-            if (gamepad2.cross){
-                loadRing();
+            else if(!crossToggle1){
+                drivePower = 1;
             }
+
+            ////////////////////////////////////////
+            ////////////////////////////////////////
+
+            if (gamepad2.cross) {
+                loadRing();
+;            }
 
             ////////////////////////////////////////
             ////////////////////////////////////////
@@ -148,7 +151,7 @@ public class willTeleOp6 extends BasicOpMode_Linear
                 sleep(300);
             }
             if(triangleToggle2){
-                flywheel.setPower(.8);
+                flywheel.setPower(.9);
             }
             else if(!triangleToggle2){
                 flywheel.setPower(0);
@@ -157,7 +160,7 @@ public class willTeleOp6 extends BasicOpMode_Linear
             ////////////////////////////////////////
             ////////////////////////////////////////
 
-            if(gamepad2.right_trigger > 0.2){
+            if(gamepad2.right_trigger > .5){
                 ringShoot.setPosition(1);
                 sleep(500);
                 ringShoot.setPosition(0.5);
@@ -167,20 +170,38 @@ public class willTeleOp6 extends BasicOpMode_Linear
             ////////////////////////////////////////
 
             if(gamepad2.dpad_up){
-                wobbleLift.setPosition(1);
+                wobbleLift.setPosition(.5);
             }
 
             if(gamepad2.dpad_down){
-                wobbleLift.setPosition(0.25);
+                wobbleLift.setPosition(0);
             }
 
             ////////////////////////////////////////
             ////////////////////////////////////////
+
+            if (gamepad2.share && !shareToggle2){
+                shareToggle2 = true;
+                sleep(300);
+            }
+            else if (gamepad2.share && shareToggle2){
+                shareToggle2 = false;
+                sleep(300);
+            }
+            if(shareToggle2){
+                ringGrab.setPosition(.4);
+                ringPivot.setPosition(.5);
+            }
+            else if(!shareToggle2){
+                ringPivot.setPosition(0);
+                ringGrab.setPosition(.6);
+            }
 
             idle();
         }
 
     }
+
    public void loadRing() {
         int slideTarget;
 
@@ -191,7 +212,7 @@ public class willTeleOp6 extends BasicOpMode_Linear
 
             sleep(1000);
 
-            slideTarget = slide.getCurrentPosition() + (int) ((3) * COUNTS_PER_INCH_SPOOL);
+            slideTarget = slide.getCurrentPosition() + (int) ((2.9) * COUNTS_PER_INCH_SPOOL);
 
             slide.setTargetPosition(slideTarget);
 
@@ -218,7 +239,7 @@ public class willTeleOp6 extends BasicOpMode_Linear
 
             slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            slideTarget = slide.getCurrentPosition() + (int) ((-3) * COUNTS_PER_INCH_SPOOL);
+            slideTarget = slide.getCurrentPosition() + (int) ((-2.9) * COUNTS_PER_INCH_SPOOL);
 
             slide.setTargetPosition(slideTarget);
 
