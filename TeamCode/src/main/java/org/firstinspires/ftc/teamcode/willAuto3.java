@@ -120,7 +120,7 @@ public class willAuto3 extends LinearOpMode {
             sleep(500);
             strafeRight(0.5, 24, 30);
             sleep(500);
-            encoderDrive(.7,-21,21,-21,21,10);
+            encoderDrive(.7, -21, 21, -21, 21, 10);
             sleep(500);
             wobbleDown();
             sleep(500);
@@ -128,26 +128,76 @@ public class willAuto3 extends LinearOpMode {
             sleep(500);
             wobbleUp();
             closeClaw();
-            encoderDrive(.7,21,-21,21,-21,10);
+            encoderDrive(.7, 21, -21, 21, -21, 10);
             sleep(500);
-            strafeLeft(0.5,18,30);
+            strafeLeft(0.5, 18, 30);
             sleep(500);
-            driveBackward(0.5,50,30);
+            driveBackward(0.5, 50, 30);
             sleep(500);
             flywheelOn();
             sleep(1200);
             fire(3);
+            sleep(300);
+            driveForward(1, 5, 30);
             //
             stop();
         }
         if (ringCount == 1) {
             //
+            driveForward(.5, 5, 10);
+            strafeLeft(.5, 10, 10);
+            driveForward(.7, 75, 10);
+            encoderDrive(.7, -31, 31, -31, 31, 10);
+            wobbleDown();
+            sleep(500);
+            openClaw();
+            sleep(500);
+            wobbleUp();
+            flywheel.setPower(.75);
+            encoderDrive(.7, 31, -31, 31, -31, 10);
+            driveBackward(.5, 25, 10);
+            strafeLeft(.5, 13, 30);
+            sleep(300);
+            fire(3);
+            sleep(500);
+            driveForward(.5, 15, 10);
+            flywheelOff();
+           /* driveBackward(1,40,10);
+            encoderDrive(.7,-22,22,-22,22,10);
+            wobbleDown();
+            openClaw();
+            driveBackward(1,24,10);
+            closeClaw();
+            sleep(300);
+            wobbleUp();
+            encoderDrive(.7,-23.5,23.5,-23.5,23.5,10);
+            strafeLeft(1,15,10);
+            driveBackward(1,60,10);
+            wobbleDown();
+            sleep(1000);
+            openClaw();
+            wobbleUp();
+            driveForward(1,5,10); */
             //
             stop();
         }
         if (ringCount == 0) {
             //
+            driveForward(.5, 80, 10);
+            strafeRight(.5, 30, 10);
             wobbleDown();
+            sleep(500);
+            openClaw();
+            sleep(500);
+            wobbleUp();
+            strafeLeft(.5, 45, 10);
+            driveBackward(.5, 20, 10);
+            flywheel.setPower(.8);
+            sleep(1000);
+            fire(3);
+            sleep(1000);
+            driveForward(.5, 15, 10);
+            flywheelOff();
             //
             stop();
         }
@@ -622,63 +672,64 @@ public class willAuto3 extends LinearOpMode {
     }
 
 
-        public void turnRight(double speed,
-        double distanceInches,
-        double timeoutS) {
-            int frontLeftTarget;
-            int frontRightTarget;
-            int backLeftTarget;
-            int backRightTarget;
+    public void turnRight(double speed,
+                          double distanceInches,
+                          double timeoutS) {
+        int frontLeftTarget;
+        int frontRightTarget;
+        int backLeftTarget;
+        int backRightTarget;
 
-            if (opModeIsActive()) {
+        if (opModeIsActive()) {
 
-                frontLeftTarget = frontLeft.getCurrentPosition() - (int) (distanceInches * COUNTS_PER_INCH);
-                frontRightTarget = frontRight.getCurrentPosition() + (int) (distanceInches * COUNTS_PER_INCH);
-                backLeftTarget = backLeft.getCurrentPosition() + (int) (distanceInches * COUNTS_PER_INCH);
-                backRightTarget = backRight.getCurrentPosition() - (int) (distanceInches * COUNTS_PER_INCH);
+            frontLeftTarget = frontLeft.getCurrentPosition() - (int) (distanceInches * COUNTS_PER_INCH);
+            frontRightTarget = frontRight.getCurrentPosition() + (int) (distanceInches * COUNTS_PER_INCH);
+            backLeftTarget = backLeft.getCurrentPosition() + (int) (distanceInches * COUNTS_PER_INCH);
+            backRightTarget = backRight.getCurrentPosition() - (int) (distanceInches * COUNTS_PER_INCH);
 
-                frontLeft.setTargetPosition(frontLeftTarget);
-                frontRight.setTargetPosition(frontRightTarget);
-                backLeft.setTargetPosition(backLeftTarget);
-                backRight.setTargetPosition(backRightTarget);
+            frontLeft.setTargetPosition(frontLeftTarget);
+            frontRight.setTargetPosition(frontRightTarget);
+            backLeft.setTargetPosition(backLeftTarget);
+            backRight.setTargetPosition(backRightTarget);
 
-                frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                runtime.reset();
-                frontLeft.setPower(Math.abs(speed));
-                frontRight.setPower(Math.abs(speed));
-                backLeft.setPower(Math.abs(speed));
-                backRight.setPower(Math.abs(speed));
+            runtime.reset();
+            frontLeft.setPower(Math.abs(speed));
+            frontRight.setPower(Math.abs(speed));
+            backLeft.setPower(Math.abs(speed));
+            backRight.setPower(Math.abs(speed));
 
-                while (opModeIsActive() &&
-                        (runtime.seconds() < timeoutS) &&
-                        (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy())) {
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutS) &&
+                    (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy())) {
 
-                    telemetry.addData("Path1", "Running to %7d :%7d", frontLeftTarget, frontRightTarget, backLeftTarget, backRightTarget);
-                    telemetry.addData("Path2", "Running at %7d :%7d",
-                            frontLeft.getCurrentPosition(),
-                            frontRight.getCurrentPosition(),
-                            backLeft.getCurrentPosition(),
-                            backRight.getCurrentPosition());
-                    telemetry.update();
-                }
-                frontLeft.setPower(0);
-                frontRight.setPower(0);
-                backLeft.setPower(0);
-                backRight.setPower(0);
-
-                frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+                telemetry.addData("Path1", "Running to %7d :%7d", frontLeftTarget, frontRightTarget, backLeftTarget, backRightTarget);
+                telemetry.addData("Path2", "Running at %7d :%7d",
+                        frontLeft.getCurrentPosition(),
+                        frontRight.getCurrentPosition(),
+                        backLeft.getCurrentPosition(),
+                        backRight.getCurrentPosition());
+                telemetry.update();
             }
+            frontLeft.setPower(0);
+            frontRight.setPower(0);
+            backLeft.setPower(0);
+            backRight.setPower(0);
 
+            frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         }
+
+
+    }
+
     public void loadRing() {
         int slideTarget;
 
@@ -725,45 +776,44 @@ public class willAuto3 extends LinearOpMode {
 
         }
     }
-    public void wobbleDown()
-    {
+
+    public void wobbleDown() {
         wobbleLift.setPosition(0);
     }
-    public void wobbleUp()
-    {
+
+    public void wobbleUp() {
         wobbleLift.setPosition(1);
     }
-    public void wobbleStore()
-    {
+
+    public void wobbleStore() {
         wobbleLift.setPosition(1);
     }
-    public void openClaw()
-    {
+
+    public void openClaw() {
         wobbleGrab.setPosition(1);
     }
-    public void closeClaw()
-    {
+
+    public void closeClaw() {
         wobbleGrab.setPosition(.5);
     }
-    public void flywheelOn()
-    {
+
+    public void flywheelOn() {
         flywheel.setPower(.9);
     }
-    public void flywheelOff()
-    {
+
+    public void flywheelOff() {
         flywheel.setPower(0);
     }
 
-    public void fire(double cycles)
-    {
+    public void fire(double cycles) {
         int cyclesCompleted = 0;
 
         while (cyclesCompleted < cycles) {
             cyclesCompleted += 1;
             ringShoot.setPosition(1);
-            sleep(800);
-            ringShoot.setPosition(.5);
             sleep(500);
+            ringShoot.setPosition(.5);
+            sleep(800);
         }
 
     }

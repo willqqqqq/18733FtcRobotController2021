@@ -1,15 +1,29 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+
+import java.util.Locale;
 
 
-@TeleOp (name = "willTeleOp6", group = "1")
-public class willTeleOp6 extends LinearOpMode {
+@TeleOp(name = "willTeleOp7", group = "1")
+public class willTeleOp7 extends LinearOpMode {
+
     private DcMotor frontLeft;
     private DcMotor frontRight;
     private DcMotor backLeft;
@@ -26,6 +40,8 @@ public class willTeleOp6 extends LinearOpMode {
     private ElapsedTime timer = new ElapsedTime();
     private ElapsedTime runtime = new ElapsedTime();
 
+    Orientation angles;
+
     static final double COUNTS_PER_MOTOR_REV = 537.6;
     static final double DRIVE_GEAR_REDUCTION = 1;     // This is < 1.0 if geared UP
     static final double WHEEL_DIAMETER_INCHES = 2.95276;
@@ -35,7 +51,11 @@ public class willTeleOp6 extends LinearOpMode {
     static final double COUNTS_PER_INCH_SPOOL = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (SPOOL_DIAMETER_INCHES * 3.1415);
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
 
         frontLeft = hardwareMap.dcMotor.get("frontLeft");
         frontRight = hardwareMap.dcMotor.get("frontRight");
@@ -59,6 +79,9 @@ public class willTeleOp6 extends LinearOpMode {
 
         slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
         boolean circleToggle1 = false;
         boolean triangleToggle1 = false;
         boolean crossToggle1 = false;
@@ -81,15 +104,22 @@ public class willTeleOp6 extends LinearOpMode {
 
         waitForStart();
 
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
         while (opModeIsActive()) {
+
+            getHeading();
+
+            telemetry.addData("Heading", angles.firstAngle);
+            telemetry.update();
 
             double r = Math.hypot(gamepad1.left_stick_x, gamepad1.left_stick_y);
             double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
             double rightX = -gamepad1.right_stick_x;
-            final double v1 = r * Math.cos(robotAngle) + rightX;
-            final double v2 = r * Math.sin(robotAngle) - rightX;
-            final double v3 = r * Math.sin(robotAngle) + rightX;
-            final double v4 = r * Math.cos(robotAngle) - rightX;
+            final double v1 = r * Math.cos(Math.abs(robotAngle - angles.firstAngle)) + rightX;
+            final double v2 = r * Math.sin(Math.abs(robotAngle - angles.firstAngle)) - rightX;
+            final double v3 = r * Math.sin(Math.abs(robotAngle - angles.firstAngle)) + rightX;
+            final double v4 = r * Math.cos(Math.abs(robotAngle - angles.firstAngle)) - rightX;
 
             frontLeft.setPower(v1 * drivePower);
             frontRight.setPower(v2 * drivePower);
@@ -110,6 +140,11 @@ public class willTeleOp6 extends LinearOpMode {
                 drivePower = 1;
             }
 
+
+            if (gamepad1.share) {
+                reset_gyro();
+            }
+
             ////////////////////////////////////////
             ////////////////////////////////////////
 
@@ -117,7 +152,7 @@ public class willTeleOp6 extends LinearOpMode {
                 loadRing();
             }
 
-            ////////////////////////////////////////
+            ///////////////////////////////////////
             ////////////////////////////////////////
 
             if (gamepad2.circle && !circleToggle2) {
@@ -191,58 +226,71 @@ public class willTeleOp6 extends LinearOpMode {
         }
     }
 
-        public void loadRing () {
-            int slideTarget;
+    public void loadRing () {
+        int slideTarget;
 
-            if (opModeIsActive()) {
+        if (opModeIsActive()) {
 
-                ringPivot.setPosition(0);
-                ringGrab.setPosition(0.3);
+            ringPivot.setPosition(0);
+            ringGrab.setPosition(0.3);
 
-                sleep(800);
+            sleep(800);
 
-                slideTarget = slide.getCurrentPosition() + (int) ((2.9) * COUNTS_PER_INCH_SPOOL);
+            slideTarget = slide.getCurrentPosition() + (int) ((2.9) * COUNTS_PER_INCH_SPOOL);
 
-                slide.setTargetPosition(slideTarget);
+            slide.setTargetPosition(slideTarget);
 
-                slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                runtime.reset();
-                slide.setPower(Math.abs(.4));
+            runtime.reset();
+            slide.setPower(Math.abs(.6));
 
-                sleep(800);
+            sleep(800);
 
-                ringPivot.setPosition(1);
+            ringPivot.setPosition(1);
 
-                sleep(800);
+            sleep(800);
 
-                ringGrab.setPosition(.5);
-                sleep(800);
+            ringGrab.setPosition(.5);
+            sleep(800);
 
-                ringGrab.setPosition(.3);
-                sleep(800);
+            ringGrab.setPosition(.3);
+            sleep(800);
 
-                ringPivot.setPosition(0);
+            ringPivot.setPosition(0);
 
-                sleep(800);
+            sleep(800);
 
-                slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-                slideTarget = slide.getCurrentPosition() + (int) ((-2.9) * COUNTS_PER_INCH_SPOOL);
+            slideTarget = slide.getCurrentPosition() + (int) ((-2.9) * COUNTS_PER_INCH_SPOOL);
 
-                slide.setTargetPosition(slideTarget);
+            slide.setTargetPosition(slideTarget);
 
-                slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                runtime.reset();
-                slide.setPower(Math.abs(.4));
+            runtime.reset();
+            slide.setPower(Math.abs(.4));
 
-                sleep(500);
+            sleep(500);
 
-                ringGrab.setPosition(.6);
+            ringGrab.setPosition(.6);
 
-            }
         }
     }
 
+    double live_gyro_value = 0;
+    double gyro_offset = 0;
+
+    double getHeading() {
+        live_gyro_value = angles.firstAngle;
+        return (live_gyro_value - gyro_offset);
+    }
+
+    void reset_gyro( ) {
+        gyro_offset = live_gyro_value;
+    }
+
+
+}
 
