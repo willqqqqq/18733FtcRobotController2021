@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -116,10 +117,36 @@ public class willTeleOp7 extends LinearOpMode {
             double r = Math.hypot(gamepad1.left_stick_x, gamepad1.left_stick_y);
             double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
             double rightX = -gamepad1.right_stick_x;
-            final double v1 = r * Math.cos(Math.abs(robotAngle - angles.firstAngle)) + rightX;
-            final double v2 = r * Math.sin(Math.abs(robotAngle - angles.firstAngle)) - rightX;
-            final double v3 = r * Math.sin(Math.abs(robotAngle - angles.firstAngle)) + rightX;
-            final double v4 = r * Math.cos(Math.abs(robotAngle - angles.firstAngle)) - rightX;
+            final double v1 = r * Math.cos(Math.abs(robotAngle - getHeading())) + rightX;
+            final double v2 = r * Math.sin(Math.abs(robotAngle - getHeading())) - rightX;
+            final double v3 = r * Math.sin(Math.abs(robotAngle - getHeading())) + rightX;
+            final double v4 = r * Math.cos(Math.abs(robotAngle - getHeading())) - rightX;
+
+            telemetry.addData("v1", v1);
+            telemetry.addData("v2", v2);
+            telemetry.addData("v3", v3);
+            telemetry.addData("v4", v4);
+
+            telemetry.addData("robotAngle", robotAngle);
+
+            telemetry.addLine()
+                    .addData("heading", new Func<String>() {
+                        @Override public String value() {
+                            return formatAngle(angles.angleUnit, angles.firstAngle);
+                        }
+                    })
+                    .addData("roll", new Func<String>() {
+                        @Override public String value() {
+                            return formatAngle(angles.angleUnit, angles.secondAngle);
+                        }
+                    })
+                    .addData("pitch", new Func<String>() {
+                        @Override public String value() {
+                            return formatAngle(angles.angleUnit, angles.thirdAngle);
+                        }
+                    });
+
+            telemetry.update();
 
             frontLeft.setPower(v1 * drivePower);
             frontRight.setPower(v2 * drivePower);
@@ -291,6 +318,13 @@ public class willTeleOp7 extends LinearOpMode {
         gyro_offset = live_gyro_value;
     }
 
+    String formatAngle(AngleUnit angleUnit, double angle) {
+        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
+    }
+
+    String formatDegrees(double degrees){
+        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
+    }
 
 }
 
