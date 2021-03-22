@@ -120,7 +120,7 @@ public class willAuto3 extends LinearOpMode {
             sleep(500);
             strafeRight(0.5, 24, 30);
             sleep(500);
-            encoderDrive(.7,-21,21,-21,21,10);
+            encoderDrive(.7,-21.5,21.5,-21.5,21.5,10);
             sleep(500);
             wobbleDown();
             sleep(500);
@@ -128,11 +128,12 @@ public class willAuto3 extends LinearOpMode {
             sleep(500);
             wobbleUp();
             closeClaw();
-            encoderDrive(.7,21,-21,21,-21,10);
+            sleep(500);
+            encoderDrive(.7,21.5,-21.5,21.5,-21.5,10);
             sleep(500);
             strafeLeft(0.5,18,30);
             sleep(500);
-            driveBackward(0.5,50,30);
+            driveBackward(0.5,51,30);
             sleep(500);
             flywheelOn();
             sleep(1200);
@@ -142,12 +143,52 @@ public class willAuto3 extends LinearOpMode {
         }
         if (ringCount == 1) {
             //
+            driveForward(0.5, 24, 30);
+            sleep(500);
+            strafeLeft(0.5, 12, 30);
+            sleep(500);
+            driveForward(0.5, 62, 30);
+            sleep(500);
+            encoderDrive(.7,-21.5,21.5,-21.5,21.5,10);
+            sleep(500);
+            wobbleDown();
+            sleep(500);
+            openClaw();
+            sleep(500);
+            wobbleUp();
+            closeClaw();
+            sleep(500);
+            encoderDrive(.7,21.5,-21.5,21.5,-21.5,10);
+            sleep(500);
+            driveBackward(0.5,74,30);
+            sleep(500);
+            encoderDrive(.7,-21.5,21.5,-21.5,21.5,10);
+            wobbleDown();
+            openClaw();
+            sleep(500);
+            driveBackward(0.5,14,30);
+            sleep(700);
+            closeClaw();
+            sleep(400);
+            wobbleStore();
+            sleep(500);
+            driveBackward(0.5,17,30);
+            sleep(500);
+            encoderDrive(.7,-23.5,23.5,-23.5,23.5,10);
+            sleep(500);
+            driveBackward(0.5, 65, 30);
+            sleep(500);
+            strafeRight(0.5,15,30);
+            sleep(500);
+            wobbleDown();
+            openClaw();
+            sleep(500);
             //
             stop();
         }
         if (ringCount == 0) {
             //
-            wobbleDown();
+
             //
             stop();
         }

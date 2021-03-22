@@ -197,10 +197,63 @@ public class willTeleOp6 extends BasicOpMode_Linear
                 ringGrab.setPosition(.6);
             }
 
+            ////////////////////////////////////////
+            ////////////////////////////////////////
+
+            if (gamepad1.triangle)
+            {
+                ringPivot.setPosition(-0.6);
+            }
+
+            ////////////////////////////////////////
+            ////////////////////////////////////////
+
             idle();
         }
 
     }
+
+    //////////////////////
+
+    public void unJam() {
+        int slideTarget;
+
+        slideTarget = slide.getCurrentPosition() + (int) ((2.9) * COUNTS_PER_INCH_SPOOL);
+
+        slide.setTargetPosition(slideTarget);
+
+        slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        runtime.reset();
+        slide.setPower(Math.abs(.4));
+
+       ringPivot.setPosition(0.4);
+       frontLeft.setPower(0.5);
+       frontRight.setPower(0.5);
+       backLeft.setPower(0.5);
+       backRight.setPower(0.5);
+       sleep(800);
+       frontLeft.setPower(0);
+       frontRight.setPower(0);
+       backLeft.setPower(0);
+       backRight.setPower(0);
+       ringPivot.setPosition(0);
+
+
+       ringGrab.setPosition(.6);
+
+        slideTarget = slide.getCurrentPosition() + (int) ((-2.9) * COUNTS_PER_INCH_SPOOL);
+
+        slide.setTargetPosition(slideTarget);
+
+        slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        runtime.reset();
+        slide.setPower(Math.abs(.4));
+
+    }
+
+    //////////////////////
 
    public void loadRing() {
         int slideTarget;
