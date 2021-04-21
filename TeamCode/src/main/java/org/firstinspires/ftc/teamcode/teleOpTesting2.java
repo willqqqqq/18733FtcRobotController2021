@@ -22,8 +22,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import java.util.Locale;
 
 
-@TeleOp(name = "willTeleOp7", group = "1")
-public class willTeleOp7 extends LinearOpMode {
+@TeleOp(name = "teleOpTesting2", group = "2")
+public class teleOpTesting2 extends LinearOpMode {
 
     private DcMotor frontLeft;
     private DcMotor frontRight;
@@ -261,7 +261,7 @@ public class willTeleOp7 extends LinearOpMode {
             ringPivot.setPosition(0);
             ringGrab.setPosition(0.3);
 
-            sleep(800);
+            sleep(200);
 
             slideTarget = slide.getCurrentPosition() + (int) ((2.9) * COUNTS_PER_INCH_SPOOL);
 
@@ -272,17 +272,17 @@ public class willTeleOp7 extends LinearOpMode {
             runtime.reset();
             slide.setPower(Math.abs(.6));
 
-            sleep(800);
+            sleep(100);
 
             ringPivot.setPosition(1);
 
-            sleep(800);
+            sleep(600);
 
             ringGrab.setPosition(.5);
-            sleep(800);
+            sleep(200);
 
             ringGrab.setPosition(.3);
-            sleep(800);
+            sleep(200);
 
             ringPivot.setPosition(0);
 
@@ -298,8 +298,6 @@ public class willTeleOp7 extends LinearOpMode {
 
             runtime.reset();
             slide.setPower(Math.abs(.4));
-
-            sleep(500);
 
             ringGrab.setPosition(.6);
 

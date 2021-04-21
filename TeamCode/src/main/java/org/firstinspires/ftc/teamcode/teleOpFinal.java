@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcontroller.external.samples.BasicOpMode_Linear;
 
 
-@TeleOp (name = "willTeleOp6", group = "1")
-public class willTeleOp6 extends BasicOpMode_Linear
+@TeleOp (name = "teleOpFinal", group = "1")
+public class teleOpFinal extends BasicOpMode_Linear
 
 {
     private DcMotor frontLeft;
@@ -119,7 +119,7 @@ public class willTeleOp6 extends BasicOpMode_Linear
 
             if (gamepad2.cross) {
                 loadRing();
-;            }
+                ;            }
 
             ////////////////////////////////////////
             ////////////////////////////////////////
@@ -227,20 +227,20 @@ public class willTeleOp6 extends BasicOpMode_Linear
         runtime.reset();
         slide.setPower(Math.abs(.4));
 
-       ringPivot.setPosition(0.4);
-       frontLeft.setPower(0.5);
-       frontRight.setPower(0.5);
-       backLeft.setPower(0.5);
-       backRight.setPower(0.5);
-       sleep(800);
-       frontLeft.setPower(0);
-       frontRight.setPower(0);
-       backLeft.setPower(0);
-       backRight.setPower(0);
-       ringPivot.setPosition(0);
+        ringPivot.setPosition(0.4);
+        frontLeft.setPower(0.5);
+        frontRight.setPower(0.5);
+        backLeft.setPower(0.5);
+        backRight.setPower(0.5);
+        sleep(800);
+        frontLeft.setPower(0);
+        frontRight.setPower(0);
+        backLeft.setPower(0);
+        backRight.setPower(0);
+        ringPivot.setPosition(0);
 
 
-       ringGrab.setPosition(.6);
+        ringGrab.setPosition(.6);
 
         slideTarget = slide.getCurrentPosition() + (int) ((-2.9) * COUNTS_PER_INCH_SPOOL);
 
@@ -255,7 +255,7 @@ public class willTeleOp6 extends BasicOpMode_Linear
 
     //////////////////////
 
-   public void loadRing() {
+    public void loadRing() {
         int slideTarget;
 
         if (opModeIsActive()) {
@@ -308,5 +308,3 @@ public class willTeleOp6 extends BasicOpMode_Linear
         }
     }
 }
-
-
