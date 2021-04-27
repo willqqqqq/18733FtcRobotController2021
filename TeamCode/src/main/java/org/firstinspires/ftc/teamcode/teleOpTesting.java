@@ -17,7 +17,6 @@ public class teleOpTesting extends BasicOpMode_Linear
     private DcMotor frontRight;
     private DcMotor backLeft;
     private DcMotor backRight;
-    private DcMotor flywheel;
     private DcMotor slide;
     private DcMotorEx flywheel1;
     private DcMotorEx flywheel2;
@@ -52,15 +51,13 @@ public class teleOpTesting extends BasicOpMode_Linear
         frontRight = hardwareMap.dcMotor.get("frontRight");
         backLeft = hardwareMap.dcMotor.get("backLeft");
         backRight = hardwareMap.dcMotor.get("backRight");
-        flywheel = hardwareMap.dcMotor.get("flywheel");
         slide = hardwareMap.dcMotor.get("slide");
         flywheel1 = hardwareMap.get(DcMotorEx.class, "flywheel1");
         flywheel2 = hardwareMap.get(DcMotorEx.class, "flywheel2");
         ringShoot = hardwareMap.get(DcMotorEx.class, "ringShoot");
 
-        frontRight  .setDirection(DcMotor.Direction.REVERSE);
+        frontRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.REVERSE);
-        flywheel.setDirection(DcMotor.Direction.REVERSE);
 
         wobbleLift = hardwareMap.servo.get("wobbleLift");
         wobbleGrab = hardwareMap.servo.get("wobbleGrab");
@@ -137,7 +134,7 @@ public class teleOpTesting extends BasicOpMode_Linear
 
             if (gamepad2.cross) {
                 loadRing();
-                ;            }
+            }
 
             ////////////////////////////////////////
             ////////////////////////////////////////
@@ -151,7 +148,7 @@ public class teleOpTesting extends BasicOpMode_Linear
                 sleep(300);
             }
             if(circleToggle2){
-                wobbleGrab.setPosition(1);
+                wobbleGrab.setPosition(0);
             }
             else if(!circleToggle2){
                 wobbleGrab.setPosition(.5);
@@ -188,14 +185,14 @@ public class teleOpTesting extends BasicOpMode_Linear
 
                 int ringShootTarget;
 
-                ringShootTarget = ringShoot.getCurrentPosition() + (int) (((1) * COUNTS_PER_ROTATION_SHOOTER) - 2);
+                ringShootTarget = ringShoot.getCurrentPosition() + (int) ((1) * COUNTS_PER_ROTATION_SHOOTER);
 
                 ringShoot.setTargetPosition(ringShootTarget);
 
                 ringShoot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
                 runtime.reset();
-                ringShoot.setPower(Math.abs(.1));
+                ringShoot.setPower(Math.abs(1));
 
             }
 
@@ -288,7 +285,7 @@ public class teleOpTesting extends BasicOpMode_Linear
 
     //////////////////////
 
-    public void loadRing() {
+    public void loadRing () {
         int slideTarget;
 
         if (opModeIsActive()) {
@@ -296,36 +293,36 @@ public class teleOpTesting extends BasicOpMode_Linear
             ringPivot.setPosition(0);
             ringGrab.setPosition(0.3);
 
-            sleep(1000);
+            sleep(300);
 
-            slideTarget = slide.getCurrentPosition() + (int) ((2.9) * COUNTS_PER_INCH_SPOOL);
+            slideTarget = slide.getCurrentPosition() + (int) ((4.3) * COUNTS_PER_INCH_SPOOL);
 
             slide.setTargetPosition(slideTarget);
 
             slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             runtime.reset();
-            slide.setPower(Math.abs(.4));
+            slide.setPower(Math.abs(.5));
 
-            sleep(1000);
+            sleep(150);
 
             ringPivot.setPosition(1);
 
-            sleep(1000);
+            sleep(600);
 
             ringGrab.setPosition(.5);
-            sleep(1000);
+            sleep(200);
 
             ringGrab.setPosition(.3);
-            sleep(1000);
+            sleep(200);
 
             ringPivot.setPosition(0);
 
-            sleep(1000);
+            sleep(300);
 
             slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            slideTarget = slide.getCurrentPosition() + (int) ((-2.9) * COUNTS_PER_INCH_SPOOL);
+            slideTarget = slide.getCurrentPosition() + (int) ((-4.32) * COUNTS_PER_INCH_SPOOL);
 
             slide.setTargetPosition(slideTarget);
 
@@ -333,8 +330,6 @@ public class teleOpTesting extends BasicOpMode_Linear
 
             runtime.reset();
             slide.setPower(Math.abs(.4));
-
-            sleep(500);
 
             ringGrab.setPosition(.6);
 

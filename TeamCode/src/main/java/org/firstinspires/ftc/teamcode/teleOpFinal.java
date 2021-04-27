@@ -2,38 +2,46 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.BasicOpMode_Linear;
 
 
-@TeleOp (name = "teleOpFinal", group = "1")
-public class teleOpFinal extends BasicOpMode_Linear
+@TeleOp (name = "teleOpFinal", group = "2")
+public class teleOpFinal  extends BasicOpMode_Linear
 
 {
     private DcMotor frontLeft;
     private DcMotor frontRight;
     private DcMotor backLeft;
     private DcMotor backRight;
-    private DcMotor flywheel;
     private DcMotor slide;
+    private DcMotorEx flywheel1;
+    private DcMotorEx flywheel2;
+    private DcMotorEx ringShoot;
     private Servo wobbleLift;
     private Servo wobbleGrab;
     private Servo ringGrab;
     private Servo ringPivot;
-    private Servo ringShoot;
 
     private ElapsedTime timer = new ElapsedTime();
     private ElapsedTime runtime = new ElapsedTime();
 
-    static final double COUNTS_PER_MOTOR_REV = 537.6;
-    static final double DRIVE_GEAR_REDUCTION = 1;     // This is < 1.0 if geared UP
+    static final double COUNTS_PER_MOTOR_REV = 28;
+    static final double DRIVE_GEAR_REDUCTION = 20;     // This is < 1.0 if geared UP
     static final double WHEEL_DIAMETER_INCHES = 2.95276;
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
 
     static final double SPOOL_DIAMETER_INCHES = 1.825;
     static final double COUNTS_PER_INCH_SPOOL = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (SPOOL_DIAMETER_INCHES * 3.1415);
+
+    static final double DRIVE_GEAR_REDUCTION_SHOOTER = 20;     // This is < 1.0 if geared UP
+    static final double COUNTS_PER_ROTATION_SHOOTER = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION_SHOOTER);
+
+    static final double DRIVE_GEAR_REDUCTION_FLY = 1;     // This is < 1.0 if geared UP
+    static final double COUNTS_PER_ROTATION_FLY = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION_FLY);
 
     @Override
     public void runOpMode()
@@ -43,23 +51,31 @@ public class teleOpFinal extends BasicOpMode_Linear
         frontRight = hardwareMap.dcMotor.get("frontRight");
         backLeft = hardwareMap.dcMotor.get("backLeft");
         backRight = hardwareMap.dcMotor.get("backRight");
-        flywheel = hardwareMap.dcMotor.get("flywheel");
         slide = hardwareMap.dcMotor.get("slide");
-        ringGrab = hardwareMap.servo.get("ringGrab");
+        flywheel1 = hardwareMap.get(DcMotorEx.class, "flywheel1");
+        flywheel2 = hardwareMap.get(DcMotorEx.class, "flywheel2");
+        ringShoot = hardwareMap.get(DcMotorEx.class, "ringShoot");
 
-        frontRight  .setDirection(DcMotor.Direction.REVERSE);
+        frontRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.REVERSE);
-        flywheel.setDirection(DcMotor.Direction.REVERSE);
 
         wobbleLift = hardwareMap.servo.get("wobbleLift");
         wobbleGrab = hardwareMap.servo.get("wobbleGrab");
-        ringShoot = hardwareMap.servo.get("ringShoot");
         ringPivot = hardwareMap.servo.get("ringPivot");
         ringGrab = hardwareMap.servo.get("ringGrab");
 
         slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        ringShoot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        flywheel1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        flywheel2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
 
         slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        ringShoot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheel1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheel2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        ringShoot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         boolean circleToggle1 = false;
         boolean triangleToggle1 = false;
@@ -76,7 +92,6 @@ public class teleOpFinal extends BasicOpMode_Linear
 
         wobbleLift.setPosition(.5);
         wobbleGrab.setPosition(.5);
-        ringShoot.setPosition(.5);
         ringPivot.setPosition(0);
         sleep(500);
         ringGrab.setPosition(.6);
@@ -119,7 +134,7 @@ public class teleOpFinal extends BasicOpMode_Linear
 
             if (gamepad2.cross) {
                 loadRing();
-                ;            }
+            }
 
             ////////////////////////////////////////
             ////////////////////////////////////////
@@ -133,7 +148,7 @@ public class teleOpFinal extends BasicOpMode_Linear
                 sleep(300);
             }
             if(circleToggle2){
-                wobbleGrab.setPosition(1);
+                wobbleGrab.setPosition(0);
             }
             else if(!circleToggle2){
                 wobbleGrab.setPosition(.5);
@@ -151,19 +166,34 @@ public class teleOpFinal extends BasicOpMode_Linear
                 sleep(300);
             }
             if(triangleToggle2){
-                flywheel.setPower(.9);
+                int rps;
+
+                rps = (int) (COUNTS_PER_ROTATION_FLY * (37));
+
+                flywheel1.setVelocity(rps);
+                flywheel2.setVelocity(rps);
             }
             else if(!triangleToggle2){
-                flywheel.setPower(0);
+                flywheel1.setVelocity(0);
+                flywheel2.setVelocity(0);
             }
 
             ////////////////////////////////////////
             ////////////////////////////////////////
 
             if(gamepad2.right_trigger > .5){
-                ringShoot.setPosition(1);
-                sleep(500);
-                ringShoot.setPosition(0.5);
+
+                int ringShootTarget;
+
+                ringShootTarget = ringShoot.getCurrentPosition() + (int) ((1) * COUNTS_PER_ROTATION_SHOOTER);
+
+                ringShoot.setTargetPosition(ringShootTarget);
+
+                ringShoot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                runtime.reset();
+                ringShoot.setPower(Math.abs(1));
+
             }
 
             ////////////////////////////////////////
@@ -255,7 +285,7 @@ public class teleOpFinal extends BasicOpMode_Linear
 
     //////////////////////
 
-    public void loadRing() {
+    public void loadRing () {
         int slideTarget;
 
         if (opModeIsActive()) {
@@ -263,36 +293,36 @@ public class teleOpFinal extends BasicOpMode_Linear
             ringPivot.setPosition(0);
             ringGrab.setPosition(0.3);
 
-            sleep(1000);
+            sleep(300);
 
-            slideTarget = slide.getCurrentPosition() + (int) ((2.9) * COUNTS_PER_INCH_SPOOL);
+            slideTarget = slide.getCurrentPosition() + (int) ((4.3) * COUNTS_PER_INCH_SPOOL);
 
             slide.setTargetPosition(slideTarget);
 
             slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             runtime.reset();
-            slide.setPower(Math.abs(.4));
+            slide.setPower(Math.abs(.5));
 
-            sleep(1000);
+            sleep(150);
 
             ringPivot.setPosition(1);
 
-            sleep(1000);
+            sleep(600);
 
             ringGrab.setPosition(.5);
-            sleep(1000);
+            sleep(200);
 
             ringGrab.setPosition(.3);
-            sleep(1000);
+            sleep(200);
 
             ringPivot.setPosition(0);
 
-            sleep(1000);
+            sleep(300);
 
             slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            slideTarget = slide.getCurrentPosition() + (int) ((-2.9) * COUNTS_PER_INCH_SPOOL);
+            slideTarget = slide.getCurrentPosition() + (int) ((-4.32) * COUNTS_PER_INCH_SPOOL);
 
             slide.setTargetPosition(slideTarget);
 
@@ -300,8 +330,6 @@ public class teleOpFinal extends BasicOpMode_Linear
 
             runtime.reset();
             slide.setPower(Math.abs(.4));
-
-            sleep(500);
 
             ringGrab.setPosition(.6);
 
