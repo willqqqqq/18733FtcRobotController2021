@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.BasicOpMode_Linear
 
 
 @TeleOp (name = "teleOpFinal", group = "2")
-public class teleOpFinal  extends BasicOpMode_Linear
+public class teleOpFinal extends BasicOpMode_Linear
 
 {
     private DcMotor frontLeft;
@@ -91,10 +91,10 @@ public class teleOpFinal  extends BasicOpMode_Linear
         double drivePower = 1;
 
         wobbleLift.setPosition(.5);
-        wobbleGrab.setPosition(.5);
+        wobbleGrab.setPosition(0);
         ringPivot.setPosition(0);
         sleep(500);
-        ringGrab.setPosition(.6);
+        ringGrab.setPosition(.5);
 
         waitForStart();
 
@@ -148,10 +148,10 @@ public class teleOpFinal  extends BasicOpMode_Linear
                 sleep(300);
             }
             if(circleToggle2){
-                wobbleGrab.setPosition(0);
+                wobbleGrab.setPosition(.5);
             }
             else if(!circleToggle2){
-                wobbleGrab.setPosition(.5);
+                wobbleGrab.setPosition(0) ;
             }
 
             ////////////////////////////////////////
@@ -220,11 +220,13 @@ public class teleOpFinal  extends BasicOpMode_Linear
             }
             if(shareToggle2){
                 ringGrab.setPosition(.4);
+                //sleep(300);
                 ringPivot.setPosition(.5);
             }
             else if(!shareToggle2){
                 ringPivot.setPosition(0);
-                ringGrab.setPosition(.6);
+                //sleep(300);
+                ringGrab.setPosition(.5);
             }
 
             ////////////////////////////////////////
@@ -270,7 +272,7 @@ public class teleOpFinal  extends BasicOpMode_Linear
         ringPivot.setPosition(0);
 
 
-        ringGrab.setPosition(.6);
+        ringGrab.setPosition(.5);
 
         slideTarget = slide.getCurrentPosition() + (int) ((-2.9) * COUNTS_PER_INCH_SPOOL);
 
@@ -322,7 +324,7 @@ public class teleOpFinal  extends BasicOpMode_Linear
 
             slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            slideTarget = slide.getCurrentPosition() + (int) ((-4.32) * COUNTS_PER_INCH_SPOOL);
+            slideTarget = slide.getCurrentPosition() + (int) ((-4.34) * COUNTS_PER_INCH_SPOOL);
 
             slide.setTargetPosition(slideTarget);
 
@@ -331,7 +333,7 @@ public class teleOpFinal  extends BasicOpMode_Linear
             runtime.reset();
             slide.setPower(Math.abs(.4));
 
-            ringGrab.setPosition(.6);
+            ringGrab.setPosition(.5);
 
         }
     }

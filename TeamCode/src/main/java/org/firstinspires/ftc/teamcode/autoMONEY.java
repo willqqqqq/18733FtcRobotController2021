@@ -20,8 +20,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@Autonomous(name="autoFinal", group="1")
-public class autoFinal extends LinearOpMode {
+@Autonomous(name="autoMONEY ", group="1")
+public class autoMONEY extends LinearOpMode {
     private DcMotor frontLeft;
     private DcMotor frontRight;
     private DcMotor backLeft;
@@ -98,6 +98,14 @@ public class autoFinal extends LinearOpMode {
         flywheel1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         flywheel2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        ringShoot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
         telemetry.addData("Path0", "Starting at %7d :%7d",
                 frontLeft.getCurrentPosition(),
                 frontRight.getCurrentPosition(),
@@ -130,27 +138,7 @@ public class autoFinal extends LinearOpMode {
             strafeRight(.5,15,10);
             driveForward(.7,90,10);
             encoderDrive(.7, -44, 44, -44, 44, 10);
-            wobbleDown();
-            sleep(1000);
-            openClaw();
-            sleep(300);
-            wobbleUp();
-            driveForward(.5,37,10);
-            shooterOn(37);
-            encoderDrive(.7, -44, 44, -44, 44, 10);
-            strafeLeft(.5,20,10);
-            fire(3);
-            sleep(1000);
-            driveForward(.5,10,10);
-            stop();
-        }
-        if (ringCount == 1) {
-
-            driveForward(.5,5,10);
-            strafeRight(.5,15,10);
-            driveForward(.7,90,10);
-            encoderDrive(.7, 22, -22, 22, -22, 10);
-            driveBackward(.3,10,10);
+            strafeLeft(.5,5,10);
             wobbleDown();
             sleep(1000);
             openClaw();
@@ -158,17 +146,68 @@ public class autoFinal extends LinearOpMode {
             wobbleUp();
             sleep(300);
             closeClaw();
-            driveForward(.3,10,10);
-            shooterOn(37);
-            encoderDrive(.7, -22, 22, -22, 22 , 10);
-            driveBackward(.5,37,10);
-            strafeLeft(.5,23,10);
-            fire(3);
+            strafeRight(.5,5,10);
+            driveForward(.5,37,10);
+            shooterOn(32);
+            encoderDrive(.7, 44, -44, 44, -44, 10);
+            strafeLeft(.5,40,10);
             sleep(1000);
+            fire(1);
+            sleep(500);
+            shooterOn(30);
+            strafeLeft(.5, 6, 10);
+            sleep(500);
+            fire(1);
+            sleep(500);
+            strafeLeft(.5, 6, 10);
+            sleep(500);
+            fire(1);
+            sleep(500);
+            driveForward(1,10,10 );
+            /*
+            strafeRight(.5,20,10);
+            intakeDown();
+            driveBackward(.5,10,10);
+            stackGrab();
+            */
+
+            stop();
+        }
+        if (ringCount == 1) {
+
+            driveForward(.5,5,10);
+            strafeRight(.5,15,10);
+            driveForward(.7,100,10);
+            strafeLeft(.5,26,10);
+            wobbleDown();
+            sleep(1000);
+            openClaw();
+            sleep(300);
+            wobbleUp();
+            sleep(300);
+            closeClaw();
+            shooterOn(32);
+            strafeLeft(.5,14 ,10);
+            driveBackward(.5,47,10);
+            sleep(1000);
+            fire(1);
+            sleep(500);
+            shooterOn(30);
+            strafeLeft(.5, 6, 10);
+            sleep(500);
+            fire(1);
+            sleep(500);
+            strafeLeft(.5, 6, 10);
+            sleep(500);
+            fire(1);
+            sleep(500);
+            strafeRight(.5,26,10);
+            shooterOff();
             intakeDown();
             driveBackward(.3,20,10);
             loadRing();
             intakeUp();
+            shooterOn(35);
             driveForward(.5,20,10);
             sleep(500);
             fire(1);
@@ -186,13 +225,23 @@ public class autoFinal extends LinearOpMode {
             openClaw();
             sleep(500);
             wobbleUp();
-            strafeLeft(.5, 24, 10);
-            driveBackward(.5, 22, 10);
-            shooterOn(37);
+            shooterOn(32);
+            strafeLeft(.5,10,10);
+            driveBackward(.5, 20, 10);
+            strafeLeft(.5, 31, 10);
             sleep(1000);
-            fire(3);
-            sleep(1000);
-            driveForward(.5, 10, 10);
+            fire(1);
+            sleep(500);
+            shooterOn(30 );
+            strafeLeft(.5, 6, 10);
+            sleep(500);
+            fire(1);
+            sleep(500);
+            strafeLeft(.5, 6, 10);
+            sleep(500);
+            fire(1);
+            sleep(500);
+            driveForward(.5, 7, 10);
             shooterOff();
 
             stop();
@@ -760,7 +809,7 @@ public class autoFinal extends LinearOpMode {
 
             slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            slideTarget = slide.getCurrentPosition() + (int) ((-4.31) * COUNTS_PER_INCH_SPOOL);
+            slideTarget = slide.getCurrentPosition() + (int) ((-4.32) * COUNTS_PER_INCH_SPOOL);
 
             slide.setTargetPosition(slideTarget);
 
@@ -841,6 +890,165 @@ public class autoFinal extends LinearOpMode {
         ringPivot.setPosition(.5);
         sleep(100);
         ringGrab.setPosition(0);
+    }
+
+    public void stackGrab() {
+
+        int slideTarget;
+
+        if (opModeIsActive()) {
+
+            slideTarget = slide.getCurrentPosition() + (int) ((2.1) * COUNTS_PER_INCH_SPOOL);
+
+            slide.setTargetPosition(slideTarget);
+
+            slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            runtime.reset();
+            slide.setPower(Math.abs(.4));
+
+            sleep(1000);
+
+            ringPivot.setPosition(0.15);
+            ringGrab.setPosition(0.3);
+
+            sleep(1000);
+
+            slideTarget = slide.getCurrentPosition() + (int) ((2.5) * COUNTS_PER_INCH_SPOOL);
+
+            slide.setTargetPosition(slideTarget);
+
+            slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            runtime.reset();
+            slide.setPower(Math.abs(.4));
+
+            sleep(1000);
+
+            ringPivot.setPosition(1);
+
+            sleep(1000);
+
+            ringGrab.setPosition(.5);
+            sleep(1000);
+
+            ringGrab.setPosition(.3);
+            sleep(1000);
+
+            ringPivot.setPosition(0.15);
+            sleep(1000);
+
+            ringGrab.setPosition(.6);
+            sleep(1000);
+
+            slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            slideTarget = slide.getCurrentPosition() + (int) ((-2.8) * COUNTS_PER_INCH_SPOOL);
+
+            slide.setTargetPosition(slideTarget);
+
+            slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            runtime.reset();
+            slide.setPower(Math.abs(.4));
+
+            sleep(1000);
+
+            ringPivot.setPosition(0);
+            ringGrab.setPosition(0.15);
+
+            sleep(1000);
+
+            slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            slideTarget = slide.getCurrentPosition() + (int) ((2.7) * COUNTS_PER_INCH_SPOOL);
+
+            slide.setTargetPosition(slideTarget);
+
+            slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            runtime.reset();
+            slide.setPower(Math.abs(.4));
+
+            sleep(1000);
+
+            ringPivot.setPosition(1);
+
+            sleep(1000);
+
+            ringGrab.setPosition(.5);
+            sleep(1000);
+
+            ringGrab.setPosition(.3);
+            sleep(1000);
+
+            ringPivot.setPosition(0.15);
+            sleep(1000);
+
+            ringGrab.setPosition(.6);
+            sleep(1000);
+
+
+            slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            slideTarget = slide.getCurrentPosition() + (int) ((-3.5) * COUNTS_PER_INCH_SPOOL);
+
+            slide.setTargetPosition(slideTarget);
+
+            slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            runtime.reset();
+            slide.setPower(Math.abs(.4));
+
+            sleep(1000);
+
+            ringPivot.setPosition(0.15);
+            ringGrab.setPosition(0.3);
+
+            sleep(1000);
+
+            slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            slideTarget = slide.getCurrentPosition() + (int) ((3.9) * COUNTS_PER_INCH_SPOOL);
+
+            slide.setTargetPosition(slideTarget);
+
+            slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            runtime.reset();
+            slide.setPower(Math.abs(.4));
+
+            sleep(1000);
+
+            ringPivot.setPosition(1);
+
+            sleep(1000);
+
+            ringGrab.setPosition(.5);
+            sleep(1000);
+
+            ringGrab.setPosition(.3);
+            sleep(1000);
+
+            ringPivot.setPosition(0.15);
+            sleep(1000);
+
+            ringGrab.setPosition(.6);
+            sleep(1000);
+
+            slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            slideTarget = slide.getCurrentPosition() + (int) ((-4.35) * COUNTS_PER_INCH_SPOOL);
+
+            slide.setTargetPosition(slideTarget);
+
+            slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            runtime.reset();
+            slide.setPower(Math.abs(.4));
+
+        }
+
     }
 
 }
